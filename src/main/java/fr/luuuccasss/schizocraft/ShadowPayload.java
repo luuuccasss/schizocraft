@@ -14,7 +14,7 @@ public record ShadowPayload(int id, double x, double y, double z, boolean visibl
         PacketCodecs.DOUBLE, ShadowPayload::x,
         PacketCodecs.DOUBLE, ShadowPayload::y,
         PacketCodecs.DOUBLE, ShadowPayload::z,
-        PacketCodecs.BOOL, ShadowPayload::visible,
+        PacketCodecs.BOOLEAN, ShadowPayload::visible,
         ShadowPayload::new);
 
     @Override
