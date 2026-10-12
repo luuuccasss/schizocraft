@@ -1,16 +1,17 @@
 package fr.luuuccasss.schizocraft.mixin;
 
 import fr.luuuccasss.schizocraft.Paranoid;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ServerPlayerEntity.class)
+@Mixin(ServerPlayer.class)
 public abstract class ServerPlayerEntityMixin implements Paranoid {
     @Unique private float schizocraft$paranoia;
 
@@ -21,22 +22,22 @@ public abstract class ServerPlayerEntityMixin implements Paranoid {
 
     @Override
     public void schizocraft$setParanoia(float paranoia) {
-        schizocraft$paranoia = MathHelper.clamp(paranoia, 0f, 100f);
+        schizocraft$paranoia = Mth.clamp(paranoia, 0f, 100f);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-    private void schizocraft$write(NbtCompound nbt, CallbackInfo ci) {
-        nbt.putFloat("SchizocraftParanoia", schizocraft$paranoia);
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    private void schizocraft$write(ValueOutput output, CallbackInfo ci) {
+        output.putFloat("SchizocraftParanoia", schizocraft$paranoia);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void schizocraft$read(NbtCompound nbt, CallbackInfo ci) {
-        schizocraft$setParanoia(nbt.getFloat("SchizocraftParanoia"));
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void schizocraft$read(ValueInput input, CallbackInfo ci) {
+        schizocraft$setParanoia(input.getFloatOr("SchizocraftParanoia", 0f));
     }
 
     /** Mourir secoue : on revient à moitié moins paranoïaque, pas guéri. */
-    @Inject(method = "copyFrom", at = @At("TAIL"))
-    private void schizocraft$copyFrom(ServerPlayerEntity old, boolean alive, CallbackInfo ci) {
+    @Inject(method = "restoreFrom", at = @At("TAIL"))
+    private void schizocraft$copyFrom(ServerPlayer old, boolean alive, CallbackInfo ci) {
         float before = ((Paranoid) old).schizocraft$getParanoia();
         schizocraft$setParanoia(alive ? before : before / 2);
     }
