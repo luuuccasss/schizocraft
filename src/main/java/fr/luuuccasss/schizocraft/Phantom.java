@@ -41,7 +41,7 @@ public class Phantom {
         this.entity = entity;
         this.shadow = shadow;
         this.vanish = vanish;
-        this.expiresAt = player.getServerWorld().getTime() + lifetime;
+        this.expiresAt = player.getWorld().getTime() + lifetime;
         this.approach = approach;
     }
 
@@ -60,7 +60,7 @@ public class Phantom {
     /** Renvoie faux quand il a disparu. */
     public boolean tick() {
         if (gone) return false;
-        if (player.isRemoved() || player.getServerWorld().getTime() > expiresAt || player.getWorld() != entity.getWorld()) {
+        if (player.isRemoved() || player.getWorld().getTime() > expiresAt || player.getWorld() != entity.getWorld()) {
             hide();
             return false;
         }
@@ -79,7 +79,7 @@ public class Phantom {
             hide();
             return false;
         }
-        if (approach > 0 && !seen && player.getServerWorld().getTime() % 2 == 0) {
+        if (approach > 0 && !seen && player.getWorld().getTime() % 2 == 0) {
             Vec3d step = player.getPos().subtract(entity.getPos()).multiply(1, 0, 1).normalize().multiply(approach * 2);
             entity.setPosition(entity.getPos().add(step));
             faceThePlayer();

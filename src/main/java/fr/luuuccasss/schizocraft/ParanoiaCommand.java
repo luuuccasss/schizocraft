@@ -53,7 +53,7 @@ public final class ParanoiaCommand {
                                 ctx.getSource().sendError(Text.literal("Hallucination inconnue."));
                                 return 0;
                             }
-                            h.play(target.getServerWorld(), target);
+                            h.play(target.getWorld(), target);
                             return 1;
                         })))));
     }
