@@ -1,6 +1,6 @@
 package fr.luuuccasss.schizocraft;
 
-/** Interface ajoutée à ServerPlayerEntity par mixin : la paranoïa du joueur, de 0 à 100. */
+/** Interface ajoutée à ServerPlayer par mixin : la paranoïa du joueur, de 0 à 100. */
 public interface Paranoid {
     float schizocraft$getParanoia();
 
