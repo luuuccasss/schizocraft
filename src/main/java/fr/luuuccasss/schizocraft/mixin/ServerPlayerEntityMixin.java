@@ -31,7 +31,7 @@ public abstract class ServerPlayerEntityMixin implements Paranoid {
 
     @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
     private void schizocraft$read(NbtCompound nbt, CallbackInfo ci) {
-        schizocraft$setParanoia(nbt.getFloat("SchizocraftParanoia"));
+        schizocraft$setParanoia(nbt.getFloat("SchizocraftParanoia", 0f));
     }
 
     /** Mourir secoue : on revient à moitié moins paranoïaque, pas guéri. */
