@@ -1,6 +1,6 @@
 # Schizocraft
 
-Mod Fabric pour Minecraft 1.21 – 1.21.1. Seul dans le noir et sans dormir, ton personnage perd pied : il **entend des bruits qui n'existent pas**, **voit des mobs fantômes** et reçoit de **faux messages**. Tout est envoyé à lui seul : les autres joueurs ne voient et n'entendent rien, et impossible de savoir ce qui est réel.
+Mod Fabric pour Minecraft 26.1 – 26.2. Seul dans le noir et sans dormir, ton personnage perd pied : il **entend des bruits qui n'existent pas**, **voit des mobs fantômes** et reçoit de **faux messages**. Tout est envoyé à lui seul : les autres joueurs ne voient et n'entendent rien, et impossible de savoir ce qui est réel.
 
 ![Un creeper juste derrière toi… qui disparaît dès que tu te retournes](docs/creeper.png)
 
@@ -59,7 +59,7 @@ Réservée aux ops : le joueur, lui, ne doit pas pouvoir vérifier ce qui est r�
 
 ## Installation
 
-1. Installer [Fabric Loader](https://fabricmc.net/use/) pour Minecraft 1.21 ou 1.21.1.
+1. Installer [Fabric Loader](https://fabricmc.net/use/) pour Minecraft 26.1, 26.1.1, 26.1.2 ou 26.2.
 2. Mettre [Fabric API](https://modrinth.com/mod/fabric-api) et le jar des [Releases](https://github.com/luuuccasss/schizocraft/releases) dans le dossier `mods/`.
 
 Le mod s'installe **sur le serveur**. Côté joueurs, il est **facultatif** :
