@@ -3,7 +3,8 @@ package fr.luuuccasss.schizocraft.client;
 import fr.luuuccasss.schizocraft.Schizocraft;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -11,7 +12,7 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -60,11 +61,12 @@ public final class ShadowRenderer {
     }
 
     public static void render(WorldRenderContext context) {
-        if (TARGETS.isEmpty() || context.consumers() == null || context.matrixStack() == null) return;
-        Vec3d camera = context.camera().getPos();
-        MatrixStack matrices = context.matrixStack();
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (TARGETS.isEmpty() || client.world == null || context.consumers() == null || context.matrices() == null) return;
+        Vec3d camera = client.gameRenderer.getCamera().getCameraPos();
+        MatrixStack matrices = context.matrices();
         ModelPart root = model();
-        float time = (context.world().getTime() + context.tickCounter().getTickProgress(true)) / 20f;
+        float time = (client.world.getTime() + client.getRenderTickCounter().getTickProgress(true)) / 20f;
         for (Int2ObjectMap.Entry<Vec3d> entry : TARGETS.int2ObjectEntrySet()) {
             // glisse doucement vers sa nouvelle position
             Vec3d target = entry.getValue();
@@ -82,9 +84,9 @@ public final class ShadowRenderer {
             matrices.multiply(RotationAxis.POSITIVE_Y.rotation(yaw));
             matrices.scale(-1, -1, 1);
             // lumière à zéro : elle reste noire même en plein jour
-            root.render(matrices, context.consumers().getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE)),
+            root.render(matrices, context.consumers().getBuffer(RenderLayers.entityCutoutNoCull(TEXTURE)),
                 0, OverlayTexture.DEFAULT_UV);
-            root.render(matrices, context.consumers().getBuffer(RenderLayer.getEyes(EYES)), 0xF000F0, OverlayTexture.DEFAULT_UV);
+            root.render(matrices, context.consumers().getBuffer(RenderLayers.eyes(EYES)), 0xF000F0, OverlayTexture.DEFAULT_UV);
             matrices.pop();
         }
     }
