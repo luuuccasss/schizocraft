@@ -1,8 +1,25 @@
 # Schizocraft
 
-Mod Fabric pour Minecraft 26.3. Seul dans le noir et sans dormir, ton personnage perd pied : il **entend des bruits qui n'existent pas**, **voit des mobs fantômes** et reçoit de **faux messages**. Tout est envoyé à lui seul : les autres joueurs ne voient et n'entendent rien, et impossible de savoir ce qui est réel.
+Mod Fabric pour Minecraft 1.20.1 à 26.3. Seul dans le noir et sans dormir, ton personnage perd pied : il **entend des bruits qui n'existent pas**, **voit des mobs fantômes** et reçoit de **faux messages**. Tout est envoyé à lui seul : les autres joueurs ne voient et n'entendent rien, et impossible de savoir ce qui est réel.
 
 ![Un creeper juste derrière toi… qui disparaît dès que tu te retournes](docs/creeper.png)
+
+## Versions
+
+Un jar par groupe de versions de Minecraft, chacun sur sa branche et dans sa [release](https://github.com/luuuccasss/schizocraft/releases).
+
+| Minecraft | Branche | Java | Jar |
+|---|---|---|---|
+| 26.3 | [`26.3`](https://github.com/luuuccasss/schizocraft/tree/26.3) | 25 | [1.0.0+26.3](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B26.3) |
+| 26.1 – 26.2 | [`26.1`](https://github.com/luuuccasss/schizocraft/tree/26.1) | 25 | [1.0.0+26.1](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B26.1) |
+| 1.21.11 | [`1.21.11`](https://github.com/luuuccasss/schizocraft/tree/1.21.11) | 21 | [1.0.0+1.21.11](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.21.11) |
+| 1.21.6 – 1.21.8 | [`1.21.8`](https://github.com/luuuccasss/schizocraft/tree/1.21.8) | 21 | [1.0.0+1.21.8](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.21.8) |
+| 1.21.5 | [`1.21.5`](https://github.com/luuuccasss/schizocraft/tree/1.21.5) | 21 | [1.0.0+1.21.5](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.21.5) |
+| 1.21.2 – 1.21.4 | [`1.21.4`](https://github.com/luuuccasss/schizocraft/tree/1.21.4) | 21 | [1.0.0+1.21.4](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.21.4) |
+| 1.21 – 1.21.1 | [`1.21.1`](https://github.com/luuuccasss/schizocraft/tree/1.21.1) | 21 | [1.0.0+1.21.1](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.21.1) |
+| 1.20.1 – 1.20.4 | [`1.20.1`](https://github.com/luuuccasss/schizocraft/tree/1.20.1) | 17 | [1.0.0+1.20.1](https://github.com/luuuccasss/schizocraft/releases/tag/1.0.0%2B1.20.1) |
+
+1.21.9 et 1.21.10 ne sont pas prises en charge.
 
 ## Paranoïa
 
@@ -59,8 +76,8 @@ Réservée aux ops : le joueur, lui, ne doit pas pouvoir vérifier ce qui est r�
 
 ## Installation
 
-1. Installer [Fabric Loader](https://fabricmc.net/use/) pour Minecraft 26.3.
-2. Mettre [Fabric API](https://modrinth.com/mod/fabric-api) et le jar des [Releases](https://github.com/luuuccasss/schizocraft/releases) dans le dossier `mods/`.
+1. Installer [Fabric Loader](https://fabricmc.net/use/) pour ta version de Minecraft.
+2. Mettre [Fabric API](https://modrinth.com/mod/fabric-api) et le jar correspondant à ta version (voir le tableau) dans le dossier `mods/`.
 
 Le mod s'installe **sur le serveur**. Côté joueurs, il est **facultatif** :
 
