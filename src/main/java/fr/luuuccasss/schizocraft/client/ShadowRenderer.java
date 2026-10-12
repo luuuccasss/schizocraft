@@ -50,10 +50,10 @@ public final class ShadowRenderer {
             // 2,6 blocs de haut : jambes 22, corps 14, tête 8 (en pixels, 16 par bloc)
             root.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-4, -44, -4, 8, 8, 8), ModelTransform.NONE);
             root.addChild("body", ModelPartBuilder.create().uv(32, 0).cuboid(-3.5f, -36, -2, 7, 14, 4), ModelTransform.NONE);
-            root.addChild("right_arm", ModelPartBuilder.create().uv(0, 16).cuboid(-1, 0, -1, 2, 24, 2), ModelTransform.pivot(-4.5f, -35, 0));
-            root.addChild("left_arm", ModelPartBuilder.create().uv(8, 16).cuboid(-1, 0, -1, 2, 24, 2), ModelTransform.pivot(4.5f, -35, 0));
-            root.addChild("right_leg", ModelPartBuilder.create().uv(16, 16).cuboid(-1, 0, -1, 2, 22, 2), ModelTransform.pivot(-1.8f, -22, 0));
-            root.addChild("left_leg", ModelPartBuilder.create().uv(24, 16).cuboid(-1, 0, -1, 2, 22, 2), ModelTransform.pivot(1.8f, -22, 0));
+            root.addChild("right_arm", ModelPartBuilder.create().uv(0, 16).cuboid(-1, 0, -1, 2, 24, 2), ModelTransform.origin(-4.5f, -35, 0));
+            root.addChild("left_arm", ModelPartBuilder.create().uv(8, 16).cuboid(-1, 0, -1, 2, 24, 2), ModelTransform.origin(4.5f, -35, 0));
+            root.addChild("right_leg", ModelPartBuilder.create().uv(16, 16).cuboid(-1, 0, -1, 2, 22, 2), ModelTransform.origin(-1.8f, -22, 0));
+            root.addChild("left_leg", ModelPartBuilder.create().uv(24, 16).cuboid(-1, 0, -1, 2, 22, 2), ModelTransform.origin(1.8f, -22, 0));
             model = TexturedModelData.of(data, 64, 64).createModel();
         }
         return model;
@@ -64,7 +64,7 @@ public final class ShadowRenderer {
         Vec3d camera = context.camera().getPos();
         MatrixStack matrices = context.matrixStack();
         ModelPart root = model();
-        float time = (context.world().getTime() + context.tickCounter().getTickDelta(true)) / 20f;
+        float time = (context.world().getTime() + context.tickCounter().getTickProgress(true)) / 20f;
         for (Int2ObjectMap.Entry<Vec3d> entry : TARGETS.int2ObjectEntrySet()) {
             // glisse doucement vers sa nouvelle position
             Vec3d target = entry.getValue();
