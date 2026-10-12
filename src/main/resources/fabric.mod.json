@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "schizocraft",
+  "version": "${version}",
+  "name": "Schizocraft",
+  "description": "Seul dans le noir et sans dormir, ton personnage perd pied : bruits qui n'existent pas, mobs fantômes, faux messages. Impossible de savoir ce qui est réel.",
+  "authors": ["luuuccasss"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["fr.luuuccasss.schizocraft.Schizocraft"],
+    "client": ["fr.luuuccasss.schizocraft.client.SchizocraftClient"]
+  },
+  "mixins": ["schizocraft.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": ">=1.21 <1.21.2",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
