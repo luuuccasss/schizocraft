@@ -1,8 +1,9 @@
 package fr.luuuccasss.schizocraft.mixin;
 
 import fr.luuuccasss.schizocraft.Paranoid;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,14 +25,14 @@ public abstract class ServerPlayerEntityMixin implements Paranoid {
         schizocraft$paranoia = MathHelper.clamp(paranoia, 0f, 100f);
     }
 
-    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
-    private void schizocraft$write(NbtCompound nbt, CallbackInfo ci) {
-        nbt.putFloat("SchizocraftParanoia", schizocraft$paranoia);
+    @Inject(method = "writeCustomData", at = @At("TAIL"))
+    private void schizocraft$write(WriteView view, CallbackInfo ci) {
+        view.putFloat("SchizocraftParanoia", schizocraft$paranoia);
     }
 
-    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
-    private void schizocraft$read(NbtCompound nbt, CallbackInfo ci) {
-        schizocraft$setParanoia(nbt.getFloat("SchizocraftParanoia", 0f));
+    @Inject(method = "readCustomData", at = @At("TAIL"))
+    private void schizocraft$read(ReadView view, CallbackInfo ci) {
+        schizocraft$setParanoia(view.getFloat("SchizocraftParanoia", 0f));
     }
 
     /** Mourir secoue : on revient à moitié moins paranoïaque, pas guéri. */
