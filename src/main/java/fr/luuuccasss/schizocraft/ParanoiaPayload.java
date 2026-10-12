@@ -1,19 +1,22 @@
 package fr.luuuccasss.schizocraft;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /** Pour les clients qui ont le mod : le niveau de paranoïa du joueur, pour assombrir les bords de l'écran. */
-public record ParanoiaPayload(float paranoia) implements CustomPayload {
-    public static final CustomPayload.Id<ParanoiaPayload> ID = new CustomPayload.Id<>(Identifier.of(Schizocraft.MOD_ID, "paranoia"));
-    public static final PacketCodec<RegistryByteBuf, ParanoiaPayload> CODEC = PacketCodec.tuple(
-        PacketCodecs.FLOAT, ParanoiaPayload::paranoia, ParanoiaPayload::new);
+public record ParanoiaPayload(float paranoia) {
+    public static final Identifier ID = new Identifier(Schizocraft.MOD_ID, "paranoia");
 
-    @Override
-    public Id<? extends CustomPayload> getId() {
-        return ID;
+    public void send(ServerPlayerEntity player) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeFloat(paranoia);
+        ServerPlayNetworking.send(player, ID, buf);
+    }
+
+    public static ParanoiaPayload read(PacketByteBuf buf) {
+        return new ParanoiaPayload(buf.readFloat());
     }
 }

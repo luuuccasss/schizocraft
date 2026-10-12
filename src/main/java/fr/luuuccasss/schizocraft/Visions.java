@@ -65,7 +65,7 @@ public final class Visions {
         float paranoia = ((Paranoid) player).schizocraft$getParanoia();
         if (Math.abs(paranoia - visions.lastSent) < 0.5f) return;
         visions.lastSent = paranoia;
-        ServerPlayNetworking.send(player, new ParanoiaPayload(paranoia));
+        new ParanoiaPayload(paranoia).send(player);
     }
 
     public void later(ServerWorld world, int ticks, Runnable action) {

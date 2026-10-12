@@ -1,24 +1,26 @@
 package fr.luuuccasss.schizocraft;
 
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /** Pour les clients qui ont le mod : une ombre apparaît (ou bouge) ici, ou disparaît. */
-public record ShadowPayload(int id, double x, double y, double z, boolean visible) implements CustomPayload {
-    public static final CustomPayload.Id<ShadowPayload> ID = new CustomPayload.Id<>(Identifier.of(Schizocraft.MOD_ID, "shadow"));
-    public static final PacketCodec<RegistryByteBuf, ShadowPayload> CODEC = PacketCodec.tuple(
-        PacketCodecs.VAR_INT, ShadowPayload::id,
-        PacketCodecs.DOUBLE, ShadowPayload::x,
-        PacketCodecs.DOUBLE, ShadowPayload::y,
-        PacketCodecs.DOUBLE, ShadowPayload::z,
-        PacketCodecs.BOOL, ShadowPayload::visible,
-        ShadowPayload::new);
+public record ShadowPayload(int id, double x, double y, double z, boolean visible) {
+    public static final Identifier ID = new Identifier(Schizocraft.MOD_ID, "shadow");
 
-    @Override
-    public Id<? extends CustomPayload> getId() {
-        return ID;
+    public void send(ServerPlayerEntity player) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeVarInt(id);
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
+        buf.writeBoolean(visible);
+        ServerPlayNetworking.send(player, ID, buf);
+    }
+
+    public static ShadowPayload read(PacketByteBuf buf) {
+        return new ShadowPayload(buf.readVarInt(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readBoolean());
     }
 }

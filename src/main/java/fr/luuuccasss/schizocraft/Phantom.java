@@ -46,7 +46,7 @@ public class Phantom {
     public void show() {
         faceThePlayer();
         if (shadow) {
-            ServerPlayNetworking.send(player, new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true));
+            new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true).send(player);
             return;
         }
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(entity, 0, entity.getBlockPos()));
@@ -82,7 +82,7 @@ public class Phantom {
             entity.setPosition(entity.getPos().add(step));
             faceThePlayer();
             if (shadow) {
-                ServerPlayNetworking.send(player, new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true));
+                new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true).send(player);
             } else {
                 player.networkHandler.sendPacket(new EntityPositionS2CPacket(entity));
                 sendRotation();
@@ -94,7 +94,7 @@ public class Phantom {
     public void hide() {
         if (gone) return;
         gone = true;
-        if (shadow) ServerPlayNetworking.send(player, new ShadowPayload(entity.getId(), 0, 0, 0, false));
+        if (shadow) new ShadowPayload(entity.getId(), 0, 0, 0, false).send(player);
         else player.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getId()));
     }
 
