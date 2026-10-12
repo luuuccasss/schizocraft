@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.BlockState;
-import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 
 /** Les hallucinations en cours d'un joueur : mobs fantômes, faux blocs et événements programmés. */
 public final class Visions {
@@ -29,14 +29,14 @@ public final class Visions {
     private Visions() {
     }
 
-    public static Visions of(ServerPlayerEntity player) {
-        return BY_PLAYER.computeIfAbsent(player.getUuid(), id -> new Visions());
+    public static Visions of(ServerPlayer player) {
+        return BY_PLAYER.computeIfAbsent(player.getUUID(), id -> new Visions());
     }
 
     /** Appelé à chaque tick pour chaque joueur. */
-    public static void tick(ServerWorld world, ServerPlayerEntity player) {
+    public static void tick(ServerLevel world, ServerPlayer player) {
         Visions visions = of(player);
-        long now = world.getTime();
+        long now = world.getGameTime();
         visions.runScheduled(now);
         visions.phantoms.removeIf(phantom -> !phantom.tick());
         visions.revertBlocks(world, player, now);
@@ -48,18 +48,18 @@ public final class Visions {
         }
         if (visions.nextHallucination < 0) visions.planNext(world, stage);
         if (now >= visions.nextHallucination) {
-            Hallucination.random(stage, world.random).play(world, player);
+            Hallucination.random(stage, world.getRandom()).play(world, player);
             visions.planNext(world, stage);
         }
     }
 
-    private void planNext(ServerWorld world, Stage stage) {
-        int seconds = stage.minDelay + world.random.nextInt(stage.maxDelay - stage.minDelay + 1);
-        nextHallucination = world.getTime() + seconds * 20L;
+    private void planNext(ServerLevel world, Stage stage) {
+        int seconds = stage.minDelay + world.getRandom().nextInt(stage.maxDelay - stage.minDelay + 1);
+        nextHallucination = world.getGameTime() + seconds * 20L;
     }
 
     /** Envoie le niveau aux clients qui ont le mod, quand il a assez changé. */
-    public static void sync(ServerPlayerEntity player) {
+    public static void sync(ServerPlayer player) {
         if (!ServerPlayNetworking.canSend(player, ParanoiaPayload.ID)) return;
         Visions visions = of(player);
         float paranoia = ((Paranoid) player).schizocraft$getParanoia();
@@ -68,8 +68,8 @@ public final class Visions {
         ServerPlayNetworking.send(player, new ParanoiaPayload(paranoia));
     }
 
-    public void later(ServerWorld world, int ticks, Runnable action) {
-        scheduled.add(new Scheduled(world.getTime() + ticks, action));
+    public void later(ServerLevel world, int ticks, Runnable action) {
+        scheduled.add(new Scheduled(world.getGameTime() + ticks, action));
     }
 
     private void runScheduled(long now) {
@@ -95,34 +95,34 @@ public final class Visions {
     }
 
     /** Montre un faux bloc à ce joueur seulement, pendant {@code ticks}. */
-    public void fakeBlock(ServerWorld world, ServerPlayerEntity player, BlockPos pos, BlockState state, int ticks) {
-        fakeBlocks.put(pos.toImmutable(), world.getTime() + ticks);
-        player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, state));
+    public void fakeBlock(ServerLevel world, ServerPlayer player, BlockPos pos, BlockState state, int ticks) {
+        fakeBlocks.put(pos.immutable(), world.getGameTime() + ticks);
+        player.connection.send(new ClientboundBlockUpdatePacket(pos, state));
     }
 
     public boolean isFake(BlockPos pos) {
         return fakeBlocks.containsKey(pos);
     }
 
-    private void revertBlocks(ServerWorld world, ServerPlayerEntity player, long now) {
+    private void revertBlocks(ServerLevel world, ServerPlayer player, long now) {
         if (fakeBlocks.isEmpty()) return;
         fakeBlocks.entrySet().removeIf(entry -> {
             if (entry.getValue() > now) return false;
-            player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, entry.getKey()));
+            player.connection.send(new ClientboundBlockUpdatePacket(world, entry.getKey()));
             return true;
         });
     }
 
     /** Tout disparaît d'un coup (réveil, mort, commande). */
-    public void clear(ServerWorld world, ServerPlayerEntity player) {
+    public void clear(ServerLevel world, ServerPlayer player) {
         phantoms.forEach(Phantom::hide);
         phantoms.clear();
-        for (BlockPos pos : fakeBlocks.keySet()) player.networkHandler.sendPacket(new BlockUpdateS2CPacket(world, pos));
+        for (BlockPos pos : fakeBlocks.keySet()) player.connection.send(new ClientboundBlockUpdatePacket(world, pos));
         fakeBlocks.clear();
         scheduled.clear();
     }
 
-    public static void forget(ServerPlayerEntity player) {
-        BY_PLAYER.remove(player.getUuid());
+    public static void forget(ServerPlayer player) {
+        BY_PLAYER.remove(player.getUUID());
     }
 }
