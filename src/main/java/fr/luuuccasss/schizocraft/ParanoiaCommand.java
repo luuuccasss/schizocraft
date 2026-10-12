@@ -8,6 +8,7 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import java.util.Locale;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -26,7 +27,7 @@ public final class ParanoiaCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("paranoia")
-            .requires(source -> source.hasPermissionLevel(2))
+            .requires(CommandManager.requirePermissionLevel(CommandManager.GAMEMASTERS_CHECK))
             .then(argument("joueur", EntityArgumentType.player())
                 .executes(ctx -> show(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "joueur"))))
             .then(literal("set")
@@ -53,7 +54,7 @@ public final class ParanoiaCommand {
                                 ctx.getSource().sendError(Text.literal("Hallucination inconnue."));
                                 return 0;
                             }
-                            h.play(target.getWorld(), target);
+                            h.play(target.getEntityWorld(), target);
                             return 1;
                         })))));
     }
