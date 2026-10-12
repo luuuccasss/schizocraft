@@ -36,9 +36,9 @@ public class Schizocraft implements ModInitializer {
         EntitySleepEvents.STOP_SLEEPING.register((entity, sleepingPos) -> {
             if (!(entity instanceof ServerPlayerEntity player)) return;
             Paranoid mind = (Paranoid) player;
-            boolean slept = player.getSleepTimer() >= 100 && player.getWorld().isDay();
+            boolean slept = player.getSleepTimer() >= 100 && player.getEntityWorld().isDay();
             mind.schizocraft$setParanoia(mind.schizocraft$getParanoia() + (slept ? Mind.GOOD_NIGHT : Mind.NAP));
-            Visions.of(player).clear((ServerWorld) player.getWorld(), player);
+            Visions.of(player).clear((ServerWorld) player.getEntityWorld(), player);
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             Visions.forget(handler.getPlayer());

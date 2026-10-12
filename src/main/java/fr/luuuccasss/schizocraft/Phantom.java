@@ -3,7 +3,7 @@ package fr.luuuccasss.schizocraft;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import java.util.Set;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerPosition;
+import net.minecraft.entity.EntityPosition;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
@@ -41,7 +41,7 @@ public class Phantom {
         this.entity = entity;
         this.shadow = shadow;
         this.vanish = vanish;
-        this.expiresAt = player.getWorld().getTime() + lifetime;
+        this.expiresAt = player.getEntityWorld().getTime() + lifetime;
         this.approach = approach;
     }
 
@@ -60,12 +60,12 @@ public class Phantom {
     /** Renvoie faux quand il a disparu. */
     public boolean tick() {
         if (gone) return false;
-        if (player.isRemoved() || player.getWorld().getTime() > expiresAt || player.getWorld() != entity.getWorld()) {
+        if (player.isRemoved() || player.getEntityWorld().getTime() > expiresAt || player.getEntityWorld() != entity.getEntityWorld()) {
             hide();
             return false;
         }
         double height = shadow ? 2.3 : entity.getHeight() * 0.7;
-        Vec3d toPhantom = entity.getPos().add(0, height, 0).subtract(player.getEyePos());
+        Vec3d toPhantom = entity.getEntityPos().add(0, height, 0).subtract(player.getEyePos());
         double distance = toPhantom.length();
         if (distance < 2) {
             hide();
@@ -79,14 +79,14 @@ public class Phantom {
             hide();
             return false;
         }
-        if (approach > 0 && !seen && player.getWorld().getTime() % 2 == 0) {
-            Vec3d step = player.getPos().subtract(entity.getPos()).multiply(1, 0, 1).normalize().multiply(approach * 2);
-            entity.setPosition(entity.getPos().add(step));
+        if (approach > 0 && !seen && player.getEntityWorld().getTime() % 2 == 0) {
+            Vec3d step = player.getEntityPos().subtract(entity.getEntityPos()).multiply(1, 0, 1).normalize().multiply(approach * 2);
+            entity.setPosition(entity.getEntityPos().add(step));
             faceThePlayer();
             if (shadow) {
                 ServerPlayNetworking.send(player, new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true));
             } else {
-                player.networkHandler.sendPacket(EntityPositionS2CPacket.create(entity.getId(), PlayerPosition.fromEntity(entity), Set.of(), false));
+                player.networkHandler.sendPacket(EntityPositionS2CPacket.create(entity.getId(), EntityPosition.fromEntity(entity), Set.of(), false));
                 sendRotation();
             }
         }

@@ -52,7 +52,7 @@ public enum Hallucination {
             for (int i = 0; i < 7; i++) {
                 double distance = 10 - i * 1.2;
                 int delay = i * 7;
-                visions.later(world, delay, () -> sound(player, step, player.getPos().add(back.multiply(distance)), 0.6f, 1f));
+                visions.later(world, delay, () -> sound(player, step, player.getEntityPos().add(back.multiply(distance)), 0.6f, 1f));
             }
             return true;
         }
@@ -167,7 +167,7 @@ public enum Hallucination {
             creeper.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
             creeper.setFuseSpeed(1);
             Visions.of(player).add(new Phantom(player, creeper, false, Phantom.Vanish.WHEN_SEEN, 80, 0));
-            sound(player, SoundEvents.ENTITY_CREEPER_PRIMED, creeper.getPos(), 1f, 0.5f);
+            sound(player, SoundEvents.ENTITY_CREEPER_PRIMED, creeper.getEntityPos(), 1f, 0.5f);
             return true;
         }
     },
@@ -319,7 +319,7 @@ public enum Hallucination {
     }
 
     static Vec3d behind(ServerPlayerEntity player, double distance) {
-        return player.getPos().add(horizontalLook(player).multiply(-distance)).add(0, 1, 0);
+        return player.getEntityPos().add(horizontalLook(player).multiply(-distance)).add(0, 1, 0);
     }
 
     /** Point à {@code distance} blocs, à {@code angle} degrés de l'endroit où le joueur regarde, au niveau de sa tête. */
@@ -330,7 +330,7 @@ public enum Hallucination {
     /** Pareil, au niveau de ses pieds. */
     static Vec3d onGround(ServerPlayerEntity player, double distance, float angle) {
         float yaw = (player.getYaw() + angle) * MathHelper.RADIANS_PER_DEGREE;
-        return player.getPos().add(-MathHelper.sin(yaw) * distance, 0, MathHelper.cos(yaw) * distance);
+        return player.getEntityPos().add(-MathHelper.sin(yaw) * distance, 0, MathHelper.cos(yaw) * distance);
     }
 
     /** Un sol où un mob tiendrait debout, près de ce point. */
