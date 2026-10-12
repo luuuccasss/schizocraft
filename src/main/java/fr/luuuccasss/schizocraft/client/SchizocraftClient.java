@@ -5,8 +5,8 @@ import fr.luuuccasss.schizocraft.ShadowPayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 
 public class SchizocraftClient implements ClientModInitializer {
     @Override
@@ -18,7 +18,7 @@ public class SchizocraftClient implements ClientModInitializer {
             ShadowRenderer.clear();
             Vignette.clear();
         });
-        WorldRenderEvents.AFTER_ENTITIES.register(ShadowRenderer::render);
-        HudRenderCallback.EVENT.register(Vignette::render);
+        LevelRenderEvents.COLLECT_SUBMITS.register(ShadowRenderer::render);
+        HudElementRegistry.addLast(Vignette.ID, Vignette::render);
     }
 }

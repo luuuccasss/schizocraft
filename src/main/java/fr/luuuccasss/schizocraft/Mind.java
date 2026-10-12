@@ -3,14 +3,15 @@ package fr.luuuccasss.schizocraft;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.phys.AABB;
 
 /** Ce qui fait monter ou descendre la paranoïa. Appelé chaque seconde. */
 public final class Mind {
@@ -36,39 +37,39 @@ public final class Mind {
     private Mind() {
     }
 
-    public static void tick(ServerWorld world, ServerPlayerEntity player) {
+    public static void tick(ServerLevel world, ServerPlayer player) {
         if (player.isSpectator() || player.isCreative() || !player.isAlive()) return;
         Paranoid mind = (Paranoid) player;
-        BlockPos eyes = BlockPos.ofFloored(player.getEyePos());
-        int light = world.getLightLevel(eyes);
+        BlockPos eyes = BlockPos.containing(player.getEyePosition());
+        int light = world.getMaxLocalRawBrightness(eyes);
         float delta = 0;
         if (light <= 3) delta += DARK;
         if (sleepless(player)) delta += INSOMNIA;
         if (hasCompany(world, player, 8)) delta += COMPANY;
         else if (!hasCompany(world, player, 24)) delta += ALONE;
-        if (world.isDay() && world.isSkyVisible(eyes) && light >= 12) delta += DAYLIGHT;
+        if (world.isBrightOutside() && world.canSeeSkyFromBelowWater(eyes) && light >= 12) delta += DAYLIGHT;
         if (delta == 0) delta = CALM;
         mind.schizocraft$setParanoia(mind.schizocraft$getParanoia() + delta);
         announce(player, mind.schizocraft$getStage());
     }
 
-    public static boolean sleepless(ServerPlayerEntity player) {
-        return player.getStatHandler().getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)) > INSOMNIA_TICKS;
+    public static boolean sleepless(ServerPlayer player) {
+        return player.getStats().getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)) > INSOMNIA_TICKS;
     }
 
-    private static boolean hasCompany(ServerWorld world, ServerPlayerEntity player, double radius) {
+    private static boolean hasCompany(ServerLevel world, ServerPlayer player, double radius) {
         double r2 = radius * radius;
-        for (ServerPlayerEntity other : world.getPlayers()) {
-            if (other != player && !other.isSpectator() && other.squaredDistanceTo(player) < r2) return true;
+        for (ServerPlayer other : world.players()) {
+            if (other != player && !other.isSpectator() && other.distanceToSqr(player) < r2) return true;
         }
-        var box = player.getBoundingBox().expand(radius);
-        if (!world.getEntitiesByClass(VillagerEntity.class, box, v -> v.isAlive()).isEmpty()) return true;
-        return !world.getEntitiesByClass(TameableEntity.class, box, t -> t.isAlive() && t.isOwner(player)).isEmpty();
+        AABB box = player.getBoundingBox().inflate(radius);
+        if (!world.getEntitiesOfClass(Villager.class, box, v -> v.isAlive()).isEmpty()) return true;
+        return !world.getEntitiesOfClass(TamableAnimal.class, box, t -> t.isAlive() && t.isOwnedBy(player)).isEmpty();
     }
 
     /** Pas de jauge visible : seulement une impression, quand on change de stade. */
-    private static void announce(ServerPlayerEntity player, Stage stage) {
-        Stage previous = LAST_STAGE.put(player.getUuid(), stage);
+    private static void announce(ServerPlayer player, Stage stage) {
+        Stage previous = LAST_STAGE.put(player.getUUID(), stage);
         if (previous == null || previous == stage) return;
         String message = null;
         if (stage.ordinal() > previous.ordinal()) {
@@ -81,10 +82,12 @@ public final class Mind {
         } else if (stage == Stage.LUCIDE) {
             message = "Tu te sens plus calme.";
         }
-        if (message != null) player.sendMessage(Text.literal(message).formatted(Formatting.GRAY, Formatting.ITALIC), true);
+        if (message != null) {
+            player.sendSystemMessage(Component.literal(message).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), true);
+        }
     }
 
-    public static void forget(ServerPlayerEntity player) {
-        LAST_STAGE.remove(player.getUuid());
+    public static void forget(ServerPlayer player) {
+        LAST_STAGE.remove(player.getUUID());
     }
 }

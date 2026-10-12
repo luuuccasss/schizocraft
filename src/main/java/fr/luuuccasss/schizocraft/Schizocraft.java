@@ -7,19 +7,19 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 public class Schizocraft implements ModInitializer {
     public static final String MOD_ID = "schizocraft";
 
     @Override
     public void onInitialize() {
-        PayloadTypeRegistry.playS2C().register(ShadowPayload.ID, ShadowPayload.CODEC);
-        PayloadTypeRegistry.playS2C().register(ParanoiaPayload.ID, ParanoiaPayload.CODEC);
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                if ((world.getTime() + player.getId()) % 20 == 0) {
+        PayloadTypeRegistry.clientboundPlay().register(ShadowPayload.ID, ShadowPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ParanoiaPayload.ID, ParanoiaPayload.CODEC);
+        ServerTickEvents.END_LEVEL_TICK.register(world -> {
+            for (ServerPlayer player : world.players()) {
+                if ((world.getGameTime() + player.getId()) % 20 == 0) {
                     Mind.tick(world, player);
                     Visions.sync(player);
                 }
@@ -27,18 +27,18 @@ public class Schizocraft implements ModInitializer {
             }
         });
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamage, damage, blocked) -> {
-            if (entity instanceof ServerPlayerEntity player && damage > 0) {
+            if (entity instanceof ServerPlayer player && damage > 0) {
                 Paranoid mind = (Paranoid) player;
                 mind.schizocraft$setParanoia(mind.schizocraft$getParanoia() + Mind.HURT);
             }
         });
         // Une vraie nuit de sommeil fait le plus grand bien ; une sieste, un peu
         EntitySleepEvents.STOP_SLEEPING.register((entity, sleepingPos) -> {
-            if (!(entity instanceof ServerPlayerEntity player)) return;
+            if (!(entity instanceof ServerPlayer player)) return;
             Paranoid mind = (Paranoid) player;
-            boolean slept = player.getSleepTimer() >= 100 && player.getWorld().isDay();
+            boolean slept = player.getSleepTimer() >= 100 && player.level().isBrightOutside();
             mind.schizocraft$setParanoia(mind.schizocraft$getParanoia() + (slept ? Mind.GOOD_NIGHT : Mind.NAP));
-            Visions.of(player).clear((ServerWorld) player.getWorld(), player);
+            Visions.of(player).clear((ServerLevel) player.level(), player);
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             Visions.forget(handler.getPlayer());
