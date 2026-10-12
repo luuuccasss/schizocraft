@@ -1,7 +1,9 @@
 package fr.luuuccasss.schizocraft;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import java.util.Set;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
@@ -84,7 +86,7 @@ public class Phantom {
             if (shadow) {
                 ServerPlayNetworking.send(player, new ShadowPayload(entity.getId(), entity.getX(), entity.getY(), entity.getZ(), true));
             } else {
-                player.networkHandler.sendPacket(new EntityPositionS2CPacket(entity));
+                player.networkHandler.sendPacket(EntityPositionS2CPacket.create(entity.getId(), PlayerPosition.fromEntity(entity), Set.of(), false));
                 sendRotation();
             }
         }
