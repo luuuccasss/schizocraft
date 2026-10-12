@@ -1,9 +1,9 @@
 package fr.luuuccasss.schizocraft.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import fr.luuuccasss.schizocraft.Schizocraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -40,15 +40,7 @@ public final class Vignette {
         }
         int w = context.getScaledWindowWidth();
         int h = context.getScaledWindowHeight();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
-        context.drawTexture(TEXTURE, 0, 0, 0, 0, w, h, w, h);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
+        int color = ((int) (alpha * 255) << 24) | 0xFFFFFF;
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, 0, 0, w, h, w, h, color);
     }
 }
