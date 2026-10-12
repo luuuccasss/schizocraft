@@ -11,9 +11,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 public class SchizocraftClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(ShadowPayload.ID,
-            (payload, context) -> ShadowRenderer.update(payload.id(), payload.x(), payload.y(), payload.z(), payload.visible()));
-        ClientPlayNetworking.registerGlobalReceiver(ParanoiaPayload.ID, (payload, context) -> Vignette.set(payload.paranoia()));
+        ClientPlayNetworking.registerGlobalReceiver(ShadowPayload.ID, (client, handler, buf, sender) -> {
+            ShadowPayload payload = ShadowPayload.read(buf);
+            client.execute(() -> ShadowRenderer.update(payload.id(), payload.x(), payload.y(), payload.z(), payload.visible()));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(ParanoiaPayload.ID, (client, handler, buf, sender) -> {
+            ParanoiaPayload payload = ParanoiaPayload.read(buf);
+            client.execute(() -> Vignette.set(payload.paranoia()));
+        });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ShadowRenderer.clear();
             Vignette.clear();

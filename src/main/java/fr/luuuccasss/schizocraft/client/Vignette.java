@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fr.luuuccasss.schizocraft.Schizocraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -26,7 +25,7 @@ public final class Vignette {
         shown = 0;
     }
 
-    public static void render(DrawContext context, RenderTickCounter tickCounter) {
+    public static void render(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.options.hudHidden) return;
         shown += (paranoia - shown) * 0.05f;
@@ -34,7 +33,7 @@ public final class Vignette {
         float strength = (shown - 25) / 75f;
         float alpha = 0.35f + 0.65f * strength;
         if (shown >= 75) {
-            float t = (client.player.age + tickCounter.getTickDelta(true)) / 20f;
+            float t = (client.player.age + tickDelta) / 20f;
             float beat = Math.max(0, MathHelper.sin(t * 7.5f)) * Math.max(0, MathHelper.sin(t * 3.75f));
             alpha = Math.min(1f, alpha + 0.25f * beat);
         }

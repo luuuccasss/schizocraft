@@ -64,7 +64,7 @@ public final class ShadowRenderer {
         Vec3d camera = context.camera().getPos();
         MatrixStack matrices = context.matrixStack();
         ModelPart root = model();
-        float time = (context.world().getTime() + context.tickCounter().getTickDelta(true)) / 20f;
+        float time = (context.world().getTime() + context.tickDelta()) / 20f;
         for (Int2ObjectMap.Entry<Vec3d> entry : TARGETS.int2ObjectEntrySet()) {
             // glisse doucement vers sa nouvelle position
             Vec3d target = entry.getValue();
