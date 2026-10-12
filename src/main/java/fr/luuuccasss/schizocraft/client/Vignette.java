@@ -34,7 +34,7 @@ public final class Vignette {
         float strength = (shown - 25) / 75f;
         float alpha = 0.35f + 0.65f * strength;
         if (shown >= 75) {
-            float t = (client.player.age + tickCounter.getTickDelta(true)) / 20f;
+            float t = (client.player.age + tickCounter.getTickProgress(true)) / 20f;
             float beat = Math.max(0, MathHelper.sin(t * 7.5f)) * Math.max(0, MathHelper.sin(t * 3.75f));
             alpha = Math.min(1f, alpha + 0.25f * beat);
         }
