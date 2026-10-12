@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -161,7 +162,7 @@ public enum Hallucination {
         boolean run(ServerWorld world, ServerPlayerEntity player) {
             BlockPos pos = ground(world, behind(player, 3.5));
             if (pos == null) return false;
-            CreeperEntity creeper = EntityType.CREEPER.create(world);
+            CreeperEntity creeper = EntityType.CREEPER.create(world, SpawnReason.MOB_SUMMONED);
             if (creeper == null) return false;
             creeper.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
             creeper.setFuseSpeed(1);
@@ -177,7 +178,7 @@ public enum Hallucination {
             float angle = (world.random.nextFloat() - 0.5f) * 120f;
             BlockPos pos = ground(world, onGround(player, 14 + world.random.nextInt(8), angle));
             if (pos == null) return false;
-            Entity entity = types[world.random.nextInt(types.length)].create(world);
+            Entity entity = types[world.random.nextInt(types.length)].create(world, SpawnReason.MOB_SUMMONED);
             if (entity == null) return false;
             entity.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
             Visions.of(player).add(new Phantom(player, entity, false, Phantom.Vanish.WHEN_STARED_AT, 400, 0));
@@ -191,7 +192,7 @@ public enum Hallucination {
             float side = (world.random.nextBoolean() ? 1 : -1) * (45 + world.random.nextFloat() * 25);
             BlockPos pos = ground(world, onGround(player, 12 + world.random.nextInt(7), side));
             if (pos == null) return false;
-            Entity holder = modded ? EntityType.MARKER.create(world) : EntityType.ENDERMAN.create(world);
+            Entity holder = modded ? EntityType.MARKER.create(world, SpawnReason.MOB_SUMMONED) : EntityType.ENDERMAN.create(world, SpawnReason.MOB_SUMMONED);
             if (holder == null) return false;
             holder.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
             Visions.of(player).add(new Phantom(player, holder, modded, Phantom.Vanish.WHEN_STARED_AT, 300, 0));
@@ -205,7 +206,7 @@ public enum Hallucination {
             boolean modded = ServerPlayNetworking.canSend(player, ShadowPayload.ID);
             BlockPos pos = ground(world, behind(player, 11));
             if (pos == null) return false;
-            Entity entity = modded ? EntityType.MARKER.create(world) : EntityType.ZOMBIE.create(world);
+            Entity entity = modded ? EntityType.MARKER.create(world, SpawnReason.MOB_SUMMONED) : EntityType.ZOMBIE.create(world, SpawnReason.MOB_SUMMONED);
             if (entity == null) return false;
             entity.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
             Visions.of(player).add(new Phantom(player, entity, modded, Phantom.Vanish.WHEN_SEEN, 400, 0.06));
